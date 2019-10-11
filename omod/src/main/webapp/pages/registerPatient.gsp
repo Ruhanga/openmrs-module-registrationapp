@@ -332,6 +332,7 @@ fieldset[id\$="-fieldset"] div > div {
 
                                 if (field.type == 'personRelationships') {
                                     configOptions.relationshipTypes = relationshipTypes
+                                    configOptions.includeRelationshipPhoneNumberField = includeRelationshipPhoneNumberField;
                                 }
                             %>
                                 ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}

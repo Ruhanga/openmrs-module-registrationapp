@@ -64,6 +64,8 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
                 app.getConfig().get("patientDashboardLink").getTextValue() : null);
         model.addAttribute("combineSubSections", app.getConfig().get("combineSubSections") !=null ?
         		app.getConfig().get("combineSubSections").getBooleanValue() : false);
+        model.addAttribute("includeRelationshipPhoneNumberField", app.getConfig().get("includeRelationshipPhoneNumberField") !=null ?
+        		app.getConfig().get("includeRelationshipPhoneNumberField").getBooleanValue() : false);
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
         model.addAttribute("breadcrumbOverride", breadcrumbOverride);

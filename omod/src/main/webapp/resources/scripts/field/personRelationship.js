@@ -1,14 +1,14 @@
 angular.module('personRelationships', ['personService', 'ui.bootstrap'])
     .controller('PersonRelationshipController', ['$scope', 'PersonService', function ($scope, PersonService) {
 
-        $scope.relationships = [{uuid: '', name: '', type: ''}];
+        $scope.relationships = [{uuid: '', name: '', type: '', phoneNumber: ''}];
 
         $scope.getPersons = function (searchString) {
             return PersonService.getPersons({'q': searchString, 'v': 'full'});
         };
 
         $scope.addNewRelationship = function () {
-            $scope.relationships.push({uuid: '', name: '', type: ''});
+            $scope.relationships.push({uuid: '', name: '', type: '', phoneNumber: ''});
         };
 
         $scope.removeRelationship = function (relationship) {
@@ -38,7 +38,7 @@ angular.module('personRelationships', ['personService', 'ui.bootstrap'])
             var field = NavigatorController.getFieldById("relationship_type");
             field.displayValue = function() {
                 return $scope.relationships.map(function(r) {
-                    return r.name +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
+                    return r.name +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']" ).text() + ((r.phoneNumber != 'undefined') ? (" - " + r.phoneNumber) : '');
                 }).join(', ');
             }
         }

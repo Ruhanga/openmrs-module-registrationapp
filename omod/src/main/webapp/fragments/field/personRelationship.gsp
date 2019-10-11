@@ -33,6 +33,10 @@
                    typeahead-on-select="selectPerson(\$item, \$index)"/>
             <input type="text" name="other_person_uuid" ng-model="relationship.uuid" ng-show="false"/>
         </p>
+                       
+        <p class="left">
+            <input type="text" name="other_person_phone_number" ng-show=${includeRelationshipPhoneNumberField == true ? "true" : "false"} ng-model="relationship.phoneNumber" />
+        </p>
 
         <p style="padding: 10px">
             <a ng-click="addNewRelationship()">

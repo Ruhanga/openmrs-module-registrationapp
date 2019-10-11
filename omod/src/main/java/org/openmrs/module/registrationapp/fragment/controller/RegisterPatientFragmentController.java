@@ -4,7 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.ObjectNode;
 import org.joda.time.DateTimeComparator;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -36,6 +38,8 @@ import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
+import org.openmrs.module.registrationapp.model.Question;
+import org.openmrs.module.registrationapp.model.Section;
 import org.openmrs.module.registrationcore.RegistrationCoreUtil;
 import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
@@ -162,7 +166,7 @@ public class RegisterPatientFragmentController {
         List<Relationship> relationships = null;
 
         if (request.getParameterMap().containsKey("relationship_type") && request.getParameterMap().containsKey("other_person_uuid")){
-            relationships = getPatientRelationships(request.getParameterValues("relationship_type"), request.getParameterValues("other_person_uuid"));
+            relationships = getPatientRelationships(request.getParameterValues("relationship_type"), request.getParameterValues("other_person_uuid"), request.getParameterValues("other_person_phone_number"), app);
         }
 
         RegistrationData registrationData = new RegistrationData();
@@ -429,7 +433,7 @@ public class RegisterPatientFragmentController {
         return false;
     }
 
-    private List<Relationship> getPatientRelationships(String[] types, String[] persons) {
+    private List<Relationship> getPatientRelationships(String[] types, String[] persons, String[] phoneNumbers, AppDescriptor app) {
         List<Relationship> relationships = new ArrayList<Relationship>();
         PersonService personService = Context.getPersonService();
 
@@ -444,13 +448,42 @@ public class RegisterPatientFragmentController {
                 if (rt != null) {
                     Person p = personService.getPersonByUuid(persons[i]);
                     if (p != null) {
+                    	
+                    	
+                    	
+                    	String phoneNumberPersonAttributeType = null;
+                        for(JsonNode node : app.getConfig().get("sections")) {
+                        	ObjectNode config = (ObjectNode) node;
+
+                			ObjectMapper objectMapper = new ObjectMapper();
+                			Section section = objectMapper.convertValue(config, Section.class);
+                			
+                			if (section.getQuestions() != null) {
+                				for (Question question : section.getQuestions()) {
+                					if (question.getId() != null && question.getId().equalsIgnoreCase("relationships-info") && question.getFields() != null) {
+                						for (Field field : question.getFields()) {
+                							ObjectNode widget = field.getWidget();
+                							if (widget.get("config") != null && widget.get("config").get("phoneNumberPersonAttributeType") != null) {
+                								phoneNumberPersonAttributeType = widget.get("config").get("phoneNumberPersonAttributeType").getTextValue();
+                							}                							
+                						}
+                					}
+                				}
+                			}
+                        }
+                        if (phoneNumberPersonAttributeType != null) {
+                        	p.addAttribute(new PersonAttribute(personService.getPersonAttributeTypeByUuid(phoneNumberPersonAttributeType), phoneNumbers[i]));
+                        }                        
+                    	
+                        
+                        
                         if (relationshipDirection == 'A') {
                             relationships.add(new Relationship(p, null, rt));
                         } else if (relationshipDirection == 'B') {
                             relationships.add(new Relationship(null, p, rt));
                         } else {
                             throw new APIException("Relationship direction not specified");
-                        }
+                        }                        
                     }
                 }
             }
