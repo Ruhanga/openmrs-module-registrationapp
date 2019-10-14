@@ -64,8 +64,10 @@ jq(function() {
             var gender;
             if (item.gender == 'M') {
                 gender = emr.message('emr.gender.M');
-            } else {
+            } else if (item.gender == 'F') {
                 gender = emr.message('emr.gender.F');
+            } else {
+            	gender = emr.message('emr.gender.' + item.gender);
             }
 
             var attributes = "";
@@ -170,8 +172,10 @@ jq(function() {
             var gender;
             if (item.gender == 'M') {
                 gender = emr.message('emr.gender.M');
-            } else {
+            } else if (item.gender == 'F') {
                 gender = emr.message('emr.gender.F');
+            } else {
+            	gender = emr.message('emr.gender.' + item.gender);
             }
 
             var attributes = "";
